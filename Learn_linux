@@ -14,4 +14,36 @@
  3. 安装sudo make install
      make install :将程序安装到系统中。如果原始编码无误，且执行结果正确，
      便可以把程序安装至系统预设的可执行文件存放路径。默认路径：/usr/local/bin
-     
+  
+  
+# 2021/10/30
+# 原文连接：https://code.visualstudio.com/docs/cpp/CMake-linux
+# linux下的vscode的Cmake和CmakeTool配置和使用
+1. 安装：直接在vscode中搜索（ctrl+shift+x）CMake和CmakeTool，并点击安装（install）
+2. 使用CmakeTool:
+    2.1 建立一个工作文件夹，或者说工作空间
+           mkdir cmakeQuickStart
+           cd cmakeQuickStart
+           code .     //表达的意思是：打开vscode在当前工作的文件，并成为你的“workspace”
+    2.2 -> ctrl+shift+P打开Command Platte并输入指令CMake: Quick Start  
+           -> 然后输入文件的名字，这个名字会进入CMakeLists.txt和一些初始源文件中
+           -> 选择Excutable作为项目类型去创建基础源文件（main.cpp，这其中包含main函数）
+                注意：如果想去创建的文件是基础的源文件和头文件，刚刚这个“Ecutabl”应选择“Library”
+           -> 这个创建的项目包含：main.cpp, CMakeLists.txt（用来告诉CMake Tools如何去build这个项目），
+                以及一个名为build文件夹
+            -> 选择kit（Select a kit），在开始使用CMake Tools extension去build项目前，需要县配置编译器，
+                 这个kit表示一个工具链，包含：编译，连接以及其他工具去构建项目。
+                 如何选择：ctrl+shift+P打开Command Platte并输入指令：CMake: Select a Kit ，然后根据提示选择即可
+             -> 配置这个项目：这里面有两件事势必要在配置的，一是上一步中的选择kit，另一个是选择variant，包含：
+                  Release, MinRelSize, RelWithDebInfo，他们的含义如下：
+                  Debug: disables optimizations and includes debug info. 
+                  Release : Includes optimizations but no debug info. 
+                  MinRelSize : Optimizes for size. No debug info. 
+                  RelWithDebInfo : Optimizes for speed and includes debug info.
+                  如何配置：ctrl+shift+P打开Command Platte并输入指令：CMake: Select Variant并选择其中的需要的选项。
+               到此基本配置kit和variant设置完成，
+                  接下来就是build项目的操作，ctrl+shift+P打开Command Platte并输入指令：CMake: Build（默认是build所有，
+                  也可以根据需要build局部）
+               Debug：ctrl+shift+P打开Command Platte并输入指令：CMake: Debug ，这样就可以开始使用了。
+                 
+                  
