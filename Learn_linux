@@ -1,0 +1,17 @@
+# 记录一下学习使用linux一些指令和概念
+# 2021/10/30
+# 原文连接：https://blog.csdn.net/u014788227/article/details/50071229
+# linux系统下安装文件的常用指令和含义
+在终端中执行：
+1.  配置sudo ./configure –prefix=....onePackage/install
+     Linux 平台有各种不同的配置，安装时需要通过 configure 来确定，
+     如：编译器用的是 cc 还是 gcc、不同库文件所在目录等。执行 configure 后会生成 Makefile，
+     Makefile 规定了用什么编译器、编译参数等信息。
+     ./configure命令就是执行 当前目录的名为configure的脚本,主要的作用是对即将安装的软件进行配置，
+     检查当前的环境是否满足要安装软件的依赖关系,并把生成的makefile放到....onePackage/install下
+ 2. 编译sudo make
+     make的基本用处是自动根据makefile里的指令来编译源文件
+ 3. 安装sudo make install
+     make install :将程序安装到系统中。如果原始编码无误，且执行结果正确，
+     便可以把程序安装至系统预设的可执行文件存放路径。默认路径：/usr/local/bin
+     
