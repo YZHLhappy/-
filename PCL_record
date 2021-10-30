@@ -1,0 +1,8 @@
+# PCL点云库的操作学习
+
+# 2021/10/30
+# 内容：PCL-segmentation
+# 原文地址：https://pointclouds.org/documentation/group__segmentation.html
+
+Overier概述：pcl_segmentation库包含一些分割算法，这些算法可以将点云分割到不同聚类中。这些算法非常适合去处理
+                             由许多分离空间的区域。聚类通常用于将云分解为其组成部分，然后可以独立处理
