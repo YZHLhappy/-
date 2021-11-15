@@ -1,0 +1,73 @@
+#  2021.11.15
+一、linux版CloudCompare安装
+1.Ubuntu软件商店版
+  安装：直接在软件商店搜索：CloudCompare并安装即可
+  问题：过于简单，目测只是一个点云文件显示软件
+2.使用命令行编译安装源码
+  2.1 安装参考网站：https://blog.csdn.net/CSDN330/article/details/84992658?spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-4.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-4.no_search_link 
+  2.2 具体操作：
+    	git clone --recursive https://github.com/cloudcompare/trunk.git
+	cd trunk
+	mkdir build
+	cd build
+	cmake ..
+	make -j8
+	sudo make install
+      按照说明，使用如下指令无法打开软件(参考https://blog.csdn.net/qq_15262755/article/details/91722501)：
+	#open pointcloud viewer
+	cloudcompare.ccViewer
+	#open the main software 
+	cloudcompare.CloudCompare
+      对此查询相关网页，解决办法参考网页https://www.cnblogs.com/yibeimingyue/p/13895195.html，使用如下指令：
+  	sudo snap install cloudcompare	//个人估计此命令是问题所在
+	#open the main software 
+	CloudCompare   
+      但是采用“CloudCompare"仍然无法打开，重新参用上面的参考(https://blog.csdn.net/qq_15262755/article/details/91722501),使用如下指令成功打开软件：
+	#open pointcloud viewer
+	cloudcompare.ccViewer
+	#open the main software 
+	cloudcompare.CloudCompare
+3.修改CloudCompare->trunk->build->CMakeCache.txt,从OFF改为ON
+	//Install qPCL plugin
+	PLUGIN_STANDARD_QPCL:BOOL=ON
+
+	//Install qPCV plugin
+	PLUGIN_STANDARD_QPCV:BOOL=ON
+
+	//Install qPoissonRecon plugin
+	PLUGIN_STANDARD_QPOISSON_RECON:BOOL=ON
+
+	//Install qRansac_SD (Shape Detection) plugin
+	PLUGIN_STANDARD_QRANSAC_SD:BOOL=ON
+
+	//Install qSRA (Surface of Revolution Analysis) plugin
+	PLUGIN_STANDARD_QSRA:BOOL=ON
+
+	//Install qPDALIO plugin to read & write LAS files
+	PLUGIN_IO_QPDAL:BOOL=ON
+
+	//Install qCSVMatrix I/O plugin
+	PLUGIN_IO_QCSV_MATRIX:BOOL=ON
+
+	//Install qDracoIO plugin to read & write DRC files
+	PLUGIN_IO_QDRACO:BOOL=ON
+
+	//Install qE57_IO plugin to read & write E57 files using libE57Format
+	PLUGIN_IO_QE57:BOOL=ON
+4.开始尝试使用
+  4.1 成功打开.e57文件
+  4.2 成功打开.asc文件
+  4.3 相比与winodws上的使用感受，进度条更明显，进度更稳定（初步感觉）
+  4.4 对imager.asc文件进行subsmaple,进度条平滑的运行完此步骤，比winodews感觉要好，但由于我改变了subsample的模式，因此我决定再尝试一次
+	第一次：
+		点的数量变化：95885079->95883992
+		运算时间：151.461s
+	
+	第二次：
+		点的数量变化：95885079->2324570
+		运算时间：1079.902
+	使用第二次的结果进行接下来的运算：
+	4.4.1 计算normal vector：knn=60，Radius=6.86013(Auto)
+		运算时间：1487.72s
+		knn=60,感觉有点太大了，过渡区域太大了
+	4.4.2 想存储运算出的几何特征的结果，但保存文件只能是.bin文件，和winodws上完全不同，但经过测试，直接打开.bin文件中确实包含了计算结果，目前计划使用ubuntu处理->保存为.bin->再用windows打开并存储
