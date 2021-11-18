@@ -1,0 +1,104 @@
+# 这个文档用于记录使用matlab来处理点云数据
+# 创建时间：2021.11.18
+# author：YZHLhappy
+
+此次matlab书写自定义格式：
+    % Overview:
+    % Created time: 20xx.xx.xx
+    % Author: YZHLhappy
+    % Modify record: 20xx.xx.xx des
+  例如：
+    % Overview:This program is used to test the processing of Point Cloud in matlab.
+    % Created time: 2021.11.18
+    % Author: YZHL
+    % Modify record: 2021.11.18 Create this code
+
+
+# 2021.11.18
+1. 点云的处理所使用的Toolbox：Lidar Toolbox™ https://www.mathworks.com/help/lidar/getstarted.html?s_tid=CRUX_lftnav
+  1.1 Start: 概述
+   - Lidar Toolbox™ 提供用于设计、分析和测试激光雷达处理系统的算法、函数和应用程序。您可以执行对象检测和跟踪、语义分割、形状拟合、
+ 激光雷达注册和障碍物检测。该工具箱提供了用于激光雷达-相机交叉校准的工作流程和应用程序。
+   - Lidar Viewer App支持激光雷达点云的交互式可视化和分析。您可以使用机器学习和深度学习算法（例如 PointPillars、SqueezeSegV2 和 PointNet++）
+ 训练检测、语义分割和分类模型。 Lidar Labeler App 支持手动和半自动标记激光雷达点云，用于训练深度学习和机器学习模型。
+   - Lidar Toolbox 为感知和导航工作流提供了激光雷达处理参考示例。大多数工具箱算法都支持 C/C++ 代码生成，以便与现有代码、桌面原型设计和部署进行集成。
+  1.2 I/O 输入与输出，以及可视化 https://www.mathworks.com/help/lidar/pointcloudio.html
+   - Lidar Toolbox™ 目前支持读取 PLY、Velodyne® PCAP、PCD、LAS、LAZ 和 Ibeo 传感器格式的数据。
+   - LAS 是一种用于存储机载激光雷达数据的行业标准（采用二进制格式）。 LAS 或 LAZ 数据文件包含激光雷达点云数据。除了激光雷达点云数据之外，LAS 数据文件还可以存储对包含表面分类数据的要素类的引用。
+   - Ibeo data container (IDC) files 
+   - Lidar Toolbox 支持写入 PLY 和 PCD 传感器格式
+      1.2.1 Read
+           - lasFileReader: LAS or LAZ file reader
+           - ibeoLidarReader: Ibeo data container (IDC) file reader
+           - velodyneFileReader: Read point cloud data from Velodyne PCAP file
+           - pcread: Read 3-D point cloud from PLY or PCD file
+      1.2.2 Write
+           - pcwrite: Write 3-D point cloud to PLY or PCD file
+      1.2.4 Visualization and Storage 可视化和存储
+           - pcshow：Plot 3-D point cloud 绘制3D点云
+           - pcshowpair：Visualize difference between two point clouds 显示出两个点云之间的差异
+           - pcplayer：Visualize streaming 3-D point cloud data 可视化流式3D点云数据
+           - pointCloud：Object for storing 3-D point cloud 用于存储3D点云的对象
+  1.3 Preprocessing 预处理
+      1.3.1 概述
+           - Lidar Toolbox™ 提供下采样、中值滤波、对齐、变换和从点云中提取特征的功能。这些初步处理算法可以提高数据的质量和准确性，并获得有关点云的有价值的信息。
+          这有助于加速高级工作流程并提供更好的结果。
+           - 几个高级工作流需要有组织的点云进行处理。您可以使用“Unorganized to Organized Conversion of Point Clouds Using Spherical Projection”工作流程中将无组织的点云
+           转换为有组织的点云。https://www.mathworks.com/help/lidar/ug/unorgaized-to-organized-pointcloud-conversion.html
+           - Unorganized to Organized Conversion of Point Clouds Using Spherical Projection：3-D 激光雷达点云通常表示为一组笛卡尔坐标 (x, y, z)。点云还可以包含其他信息，
+           例如强度和 RGB 值。与图像像素的分布不同，激光雷达点云的分布通常是稀疏且不规则的。处理这样的稀疏数据是低效的。为了获得紧凑的表示，您将激光雷达点云投影到球体上以创建密集的、
+           基于网格的表示，称为有组织的表示。
+      1.3.2 Apps
+           - Lidar Viewer：Visualize and analyze lidar data
+      1.3.3 Functions
+           - pcdownsample：对 3D 点云进行下采样
+           - pcmedian：中值滤波 3D 点云数据
+           - pcdenoise：从 3D 点云中去除噪声
+           - pcalign：对齐阵列点云
+           - pccat：连接 3D 点云阵列
+           - pcnormals：估计点云的法线
+           - pctransform：变换 3D 点云
+           - pcorganize：将 3D 点云转换为有组织的点云
+           - lidarParameters：激光雷达传感器参数
+           - pc2dem：创建点云数据的数字高程模型 (DEM) digital elevation model (DEM)
+           
+           - findNearestNeighbors：查找点云中某个点的最近邻居
+           - findNeighborsInRadius：查找点云中某个点半径内的邻居
+           - findPointsInROI：在点云中查找感兴趣区域内的点
+           - removeInvalidPoints：从点云中删除无效点
+           
+           - extractEigenFeatures：从点云段中提取基于特征值的特征
+           - extractFPFHFeatures：从点云中提取快速点特征直方图 (FPFH) 描述符
+           - detectRectangularPlanePoints：检测点云中指定尺寸的矩形平面
+  1.4 Labeling, Segmentation, and Detection：使用深度学习和几何算法标记、分割、检测和跟踪点云数据中的对象
+      1.4.1 概述
+           - Lidar Toolbox™ 包括几何和预训练的深度学习算法，用于分割点云数据以及检测和跟踪感兴趣的对象。
+           - 您可以使用 Lidar Labeler App为深度学习算法准备标记的训练数据。
+      1.4.2 深度学习的使用
+           1.4.2.1 Getting Started with Point Clouds Using Deep Learning 
+      
+           1.4.2.2 Getting Started with PointPillars
+      
+           1.4.2.3 Getting started with PointNet++
+      
+           1.4.2.4 Get Started with the Lidar Labeler
+      1.4.3 Labeling
+           激光雷达点云中的交互式地面实况标记
+      1.4.4 Segmentation
+           - 使用深度学习和几何算法分割点云数据。
+           - 语义分割将 3-D 点云中的每个点与类标签相关联，例如汽车、卡车、地面或植被。 Lidar Toolbox™ 提供深度学习算法来对点云数据执行语义分割。
+            使用 PointSeg、SqueezeSegV2 和 PointNet++ 卷积神经网络 (CNN) 开发语义分割模型。
+           - 您可以使用 segmentGroundSMRF 函数在点云数据中分割地面
+           1.4.4.1 Functions
+                   - Geometrical：
+                     segmentGroundSMRF：使用简单形态滤波器 (SMRF) 算法从激光雷达数据中分割地面
+                     segmentLidarData：将 3-D 范围数据进行聚类
+                     segmentGroundFromLidarData：从有组织的激光雷达数据中分割地面点
+                     pcsegdist：基于欧几里德距离将点云分割聚类
+      1.4.5 Detection and Tracking
+           激光雷达点云数据中的目标检测、形状拟合和跟踪。
+
+
+
+
+  
