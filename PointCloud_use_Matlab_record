@@ -140,14 +140,14 @@
     4. 完成周报
     5. 学习C++,并记录笔记：C++ Primer Plus第六版 第二章（全部）
     6. 未来一周的研究计划
-#已完成的任务“
+# 已完成的任务
     1. 整篇论文的架构建立完成（暂定7章内容）
     2. 未来一周的研究计划
+    3. 完成周报
+    4. 未完成随机森林搭建
     
     
-    
-    
-    
+   
 # 2021.11.22（周一）
 # 预计目标：
     1. 如果21日没有完成随机森林的程序测试，则首要目标是完成它。
@@ -155,6 +155,58 @@
     3. 进入GoTools的Github学习这个软件的使用，并使用简单点云数据进行测试。
     4. 开始书写论文，目标：封面，第一章-引言（motivation，introduction等）
     5. 学习C++,并记录笔记：C++ Primer Plus第六版 第三章（全部）
+# 已完成的任务
+    1. 随机森林的程序搭建-完成
+    2. 随机森林程序训练和测试（数据集是从网上下载的）-完成
+    3. 
+# 更新目标
+    1. 下一步需要建立point cloud中需要的数据集
+--------------------------------------------------------------------------------------------
+# 2021.11.22 记录
+    1. 使用https://github.com/ttomita/RandomerForest.git中的数据集abalone进行随机森林的测试
+       程序结构参考了https://zhuanlan.zhihu.com/p/367491476文中的程序，但文中程序是regression，我这里是classification
+       因此需要将
+            RFModel=TreeBagger(2000,Input_train,Output_train,'Method','regression','OOBPrediction','On','MinLeafSize',RFLeaf(i));
+       中的regression改为classification。
+            RFModel=TreeBagger(2000,Input_train,Output_train,'Method','classification','OOBPrediction','On','MinLeafSize',RFLeaf(i));
+       - 选择最优叶子数和树的数量
+            这一步我遇到了循环5此后得到的数据有两个最优解：一个是nLeaf=20，nTree=65和57；另一个是nLeaf=50，nTree=107和36。
+            我最终选择了
+                nLeaf = 20;
+                nTree = 60;
+       - 循环（为了对机器学习进行多次测试）
+       
+       - 数据划分（我没有使用到这一步，因为参考数据集中已经分类好了）
+       - 随机森林的实现
+            nLeaf = 20;
+            nTree = 60;
+            RFModel_train=TreeBagger(nTree,Input_train,Output_train,'Method','classification',...
+                                     'OOBPredictorImportance','on', 'MinLeafSize',nLeaf);
+       - 精度衡量
+            [RFPredictYield,RFPredictConfidenceInterval]=predict(RFModel_train,Input_test);
+            这部分遇到问题：
+            - “未定义与 'cell' 类型的输入参数相对应的函数 'minus'”
+                问题原因：由于TreeBagger输出的RFPredictYield为“cell”格式，需要转换为“矩阵”数据。
+                解决办法：https://ww2.mathworks.cn/help/matlab/ref/cell2mat.html
+                        A = cell2mat(C)；
+            - RFPredictConfidenceInterval结果为三个数值，三个数值和为1，我猜测它们的含义为：这里面有三个标签（0，1，2），
+            因此每个结果是对应每个标签的概率。
+            
+       - 变量重要程度排序
+            成功输出
+            不过这位作者书写得程序有很多值得学习的地方，仍需要进一步理解这些语法。
+       - 保存模型
+            成功保存，并尝试导入模型使用；
+                %% 载入训练过的模型RF_abalone.mat，载入后可直接调用模型
+                load('RF_abalone.mat'); 
+                %% 使用模型进行预测
+                [RFPredictYield,RFPredictConfidenceInterval]=predict(RFModel_train,Input_test);
+    2. 将“选择最优叶子数和树的数量”修改为FindOptimizationTreesandLeaf.m函数
+        功能：根据输入参数，plot出不同叶子树和不同数量的树对应的误差（越小越好）
+              使用者可以观察后选出最有值（因为多次循环后，最优值不一定只有一个，需要自己判断）
+        输出：plot几个误差图
+
+--------------------------------------------------------------------------------------------
 #2021.11.23（周二）
 # 预计目标：
     1. 使用已有（22日）随机森林训练模型进行测试。
