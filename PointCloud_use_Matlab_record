@@ -316,6 +316,11 @@
             - 山体表面
             - 人类居住地
             - 树
+     准备计算特征值：
+        重要参数：
+            - surface approximation： Local surface model：plane/Quadirc/Triangulation
+            - neighbors: Octree-radius:auto 还是其他，auto要注意什么，理论上radius越大，法向量越平滑
+            - orientation：mini tree ，knn= ？，理论上这个越大越精确，但计算时间也越长
 -----------------------------------------------------------------------------
     
 # 2021.11.30
