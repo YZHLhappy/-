@@ -357,7 +357,13 @@
             (https://www.mathworks.com/matlabcentral/fileexchange/47364-true-positives-false-positives-true-negatives-false-negatives-from-2-matrices), 
             MATLAB Central File Exchange. Retrieved December 2, 2021.”的程序，自己修改了一下，将原有的只可以计算0和1的取值范围进行了扩展，现在可以取任意值了。
             程序已上传到github（2021.12.02.17:46)
-        
+        IoU = IoU = TP/(FP+TP+FN); https://calebrob.com/ml/2018/09/11/understanding-iou.html
+        mIoU = ; https://zhuanlan.zhihu.com/p/344635951?utm_source=wechat_session&utm_medium=social&utm_oi=712617144986124288
+        F1_score = 2*TP/(2*TP+FP+FN); https://en.wikipedia.org/wiki/Confusion_matrix
+        Acc = (TP+TN)/(TP+TN+FP+FN); https://en.wikipedia.org/wiki/Confusion_matrix
+        mAcc = ; https://zhuanlan.zhihu.com/p/344635951?utm_source=wechat_session&utm_medium=social&utm_oi=712617144986124288
+        Recall = TP/(TP+FN); https://en.wikipedia.org/wiki/Confusion_matrix
+        Precision = TP/(TP+FP); https://en.wikipedia.org/wiki/Confusion_matrix
         
         - Segmentation models: accuracy , (m)IoU
         
