@@ -325,13 +325,53 @@
     
 # 2021.11.30
     1. 会议
-    2. 开始segmentation的程序（region based），使用matlab
-    3. 再次安装pcl的windows环境
-    4. 如果matlab分割不成，则改用pcl
-    5. 写论文
+    2. 开始segmentation的程序（region based），使用matlab（未执行）
+    3. 再次安装pcl的windows环境（未执行）
+    4. 如果matlab分割不成，则改用pcl（未执行）
+    5. 写论文（未执行）
+--------------------------------------------------------------------------------------------
 # 2021.12.01
-    1. convert 3D point cloud to range image
-    2. 使用图像处理算法
-    3. 写论文
+    1. convert 3D point cloud to range image（未执行）
+    2. 使用图像处理算法（未执行）
+    3. 写论文（未执行）
+# 执行的任务
+    1. 使用rasterize对点云进行栅格化处理，此处理大大减小了点云数量和运算量，并且解决了点云不均匀的问题
+    2. 测试PointNet++(在matlab上）,例程测试完成，接下来准备尝试套用自己的数据
+    3. 使用栅格化后的点云进行分类处理，效果不错
+--------------------------------------------------------------------------------------------
+# 2021.12.02
+    1. 设置和编写评价标准
+    2. 将评价标准写成函数
+    3. 测试评价标准（栅格化后的数据和未栅格的数据）
+    4. 想办法使用pointNet++对自己的数据进行处理
+-------------------------------------------------------------------------------------- 
+    1. 点云分类和分割评价体系
+        - Classification method: overall accuracy , mean accuracy
+            accuracy = (TP+TN)/(TP+TN+FP+FN);
+            参考：https://blog.csdn.net/Hello_Chan/article/details/108672379
+            TP: True Positive
+            FN: False Negative
+            FP: False Positive
+            TN: True Negative
+            根据“Jason Joseph Rebello (2021). True Positives, False Positives, True Negatives, False Negatives from 2 Matrices 
+            (https://www.mathworks.com/matlabcentral/fileexchange/47364-true-positives-false-positives-true-negatives-false-negatives-from-2-matrices), 
+            MATLAB Central File Exchange. Retrieved December 2, 2021.”的程序，自己修改了一下，将原有的只可以计算0和1的取值范围进行了扩展，现在可以取任意值了。
+            程序已上传到github（2021.12.02.17:46)
+        
+        
+        - Segmentation models: accuracy , (m)IoU
+        
+        
+        - detection tasks: (m)IoU , accuracy , precision , recall
+        
+        
+        - Object tracking: MOTA , MOTP
+        
+        
+        - scene for estimation: EPE
+        
+        
+        - 3D match and registration models: ROC curves
+
     
   
