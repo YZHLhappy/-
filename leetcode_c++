@@ -1,0 +1,13 @@
+# 2021.12.22
+  1. hashtable
+  题号：1. 两数之和
+    做法：1. 两次遍历，时间复杂度O(n^2)
+          2. hashtable: 时间复杂度O(n)
+              哈希表的操作：（参考：https://zhuanlan.zhihu.com/p/296360525）
+              unordered_map<Key,T>::iterator it;
+                (*it).first;             // the key value (of type Key)
+                (*it).second;            // the mapped value (of type T)
+                (*it);                   // the "element value" (of type pair<const Key,T>) 
+                
+                .find 　　　　　　通过给定主键查找元素,没找到：返回unordered_map::end
+                  例子：     if(mymap.find(10000) != mymap.end())，如果if为true，则表明有需要找的值，因为.find没找到回返回unordered_map::end，此时它==mymap.end()
