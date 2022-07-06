@@ -139,9 +139,78 @@
             {
                     cuda_hello<<<1,1>>>();
                     cudaDeviceSynchronize();                                                                           //由于__global__形式的函数是异步的，因此需要同步一下（除此之外需要这个函数才可以将printf显示到屏幕上）。
+                                                                                                                                                    //Just one more thing: I need the CPU to wait until the kernel is done before it accesses the results (because 
+                                                                                                                                                    //CUDA kernel launches don’t block the calling CPU thread). To do this I just call cudaDeviceSynchronize() 
+                                                                                                                                                    //before doing the final error checking on the CPU.
                     return 0;
             }
-    1.5.
+    1.5. 在colab测试程序:
+                ------------------------------------------------------------------------------------------
+                //一个block，一个thread：
+                        __global__
+                        void add(int n, float *x, float *y)
+                        {
+                          for (int i = 0; i < n; i++)
+                            y[i] = x[i] + y[i];
+                        }
+                ------------------------------------------------------------------------------------------
+                //一个block，多个thread：
+                        __global__
+                        void add(int n, float *x, float *y)
+                        {
+                          int index = threadIdx.x;
+                          int stride = blockDim.x;
+                          for (int i = index; i < n; i += stride)
+                              y[i] = x[i] + y[i];
+                        }
+                ------------------------------------------------------------------------------------------
+                //多个block，多个thread：                
+                        __global__
+                        void add(int n, float *x, float *y)
+                        {
+                          int index = blockIdx.x * blockDim.x + threadIdx.x;
+                          int stride = blockDim.x * gridDim.x;
+                          for (int i = index; i < n; i += stride)
+                            y[i] = x[i] + y[i];
+                        }
+                ------------------------------------------------------------------------------------------
+                 //主函数
+                 int main(void)
+                {
+                  int N = 1<<20;
+                  float *x, *y;
+
+                  cudaMallocManaged(&x, N*sizeof(float));
+                  cudaMallocManaged(&y, N*sizeof(float));
+
+                  for (int i = 0; i < N; i++) {
+                    x[i] = 1.0f;
+                    y[i] = 2.0f;
+                  }
+                ------------------------------------------------------------------------------------------
+                //一个block，一个thread
+                 add<<<1, 1>>>(N, x, y); 
+                ------------------------------------------------------------------------------------------
+                 //一个block，多个thread
+                 add<<<1, 256>>>(N, x, y); 
+                ------------------------------------------------------------------------------------------
+                //多个block，多个thread
+                int blockDim=256; 
+                int gridNum=(N+blockDim-1)/blockDim;
+                add<<<gridNum, blockDim>>>(N, x, y);
+                ------------------------------------------------------------------------------------------
+                  cudaDeviceSynchronize();
+
+                  float maxError = 0.0f;
+                  for (int i = 0; i < N; i++)
+                    maxError = fmax(maxError, fabs(y[i]-3.0f));
+                  std::cout << "Max error: " << maxError << std::endl;
+
+                  cudaFree(x);
+                  cudaFree(y);
+
+                  return 0;
+                }
     1.6. 
     1.7. 
     1.8. 
