@@ -211,7 +211,18 @@
 
                   return 0;
                 }
-    1.6. 
+    1.6. At its core are three key abstractions 
+                - a hierarchy of thread groups, 
+                - shared memories, 
+                - barrier synchronization 
+            that are simply exposed to the programmer as a minimal set of language extensions.
+            These abstractions provide：
+                - fine-grained data parallelism，
+                - thread parallelism, 
+                - nested within coarse-grained data parallelism，
+                - task parallelism.
+
+
     1.7. 
     1.8. 
     1.9. 
