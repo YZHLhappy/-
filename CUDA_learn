@@ -13,12 +13,11 @@
 
 
 #2022.07.06
-
 参考链接：
         1. https://zhuanlan.zhihu.com/p/360897341，CUDA 编程小练习（一）。
         2. https://medium.com/@iphoenix179/running-cuda-c-c-in-jupyter-or-how-to-run-nvcc-in-google-colab-663d33f53772，Running CUDA C/C++ 
              in Jupyter or how to run nvcc in Google CoLab。
-             
+  
 1. cuda环境搭建
     由于没有GPU，根据 https://zhuanlan.zhihu.com/p/360897341 中的建议采用colab进行cuda基本的程序练习。
     1.1. 打开colab，建立一个新的笔记本（然后安需要修改笔记本名字）。
