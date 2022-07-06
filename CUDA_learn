@@ -1,4 +1,24 @@
+#2022.07.05
+1. cuda的基本概念
+
+
+
+
+
+
+
+
+
+
+
+
 #2022.07.06
+
+参考链接：
+        1. https://zhuanlan.zhihu.com/p/360897341，CUDA 编程小练习（一）。
+        2. https://medium.com/@iphoenix179/running-cuda-c-c-in-jupyter-or-how-to-run-nvcc-in-google-colab-663d33f53772，Running CUDA C/C++ 
+             in Jupyter or how to run nvcc in Google CoLab。
+             
 1. cuda环境搭建
     由于没有GPU，根据 https://zhuanlan.zhihu.com/p/360897341 中的建议采用colab进行cuda基本的程序练习。
     1.1. 打开colab，建立一个新的笔记本（然后安需要修改笔记本名字）。
@@ -13,3 +33,17 @@
                     !pip install git+https://github.com/depctg/nvcc4jupyter.git          //将原来的"git+git:" 改为了"git+https:"
                     %load_ext nvcc_plugin
                     !nvcc --version
+    1.4. 测试例程（此程序也来自与此链接）
+            %%cu                                                                                                                             //当程序的语言是c/c++时，需要告诉interpreter，此处的%cu就是这个作用。
+            #include <stdio.h>
+            __global__ void cuda_hello()
+            {
+                    printf("Hello world from GPU!\n");
+            }
+            
+            int main()
+            {
+                    cuda_hello<<<1,1>>>();
+                    cudaDeviceSynchronize();                                                                           //由于__global__形式的函数是异步的，因此需要同步一下（除此之外需要这个函数才可以将printf显示到屏幕上）。
+                    return 0;
+            }
