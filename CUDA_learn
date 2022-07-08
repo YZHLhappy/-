@@ -258,13 +258,39 @@
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #2022.07.08
 参考链接：
-        1. https://zhuanlan.zhihu.com/p/366196428，CUDA 编程小练习（七），向量内积
-        
+        1. https://zhuanlan.zhihu.com/p/366196428，CUDA 编程小练习（七），向量内积。
+        2. https://zhuanlan.zhihu.com/p/367833053，CUDA 编程小练习（八），矩阵乘法。
         
     1.1. （问题尚未解决）在colab继续昨天的问题分析，问题查询思路：
                         - 根据手动计算，确定运算节点的位置并输出当前节点的计算结果，以此来判断改写出错在哪里。
                             - __global__ 函数中的中间参数无法打印输出，原因待分析。
                             - 经测试，使用cudaMallocManaged()改写后的数据中（一共有result, v1, v2, vLength)，v1和v2的数据是对的，但result的数据是不符合预期的（依然为0）。
                             - 重写了一边进行逻辑上查验，还是没有发现问题。
-    1.2. 
-        
+    1.2. 参考2的函数：（应该有优化空间，例如temp[]）
+            __global__ void matrix_vector_multiplication(float* vector_result, float *matrix_a, float *vector_b, int m_row, int n_col) 
+            {
+                extern __shared__ float temp[]; 
+                int tid = blockIdx.x * blockDim.x + threadIdx.x;
+
+                // 上面这一生成索引会有tid超出矩阵边界的风险，因此需要用下面的条件语句加限制
+                int size_of_the_matrix = m_row*n_col;
+                if(tid<size_of_the_matrix)
+                {
+                    temp[tid] = matrix_a[tid] * vector_b[threadIdx.x]; // 所有的乘法，近乎同时完成。
+                }
+
+                __syncthreads(); // synchronize all threads
+
+                if (threadIdx.x == 0)
+                {
+                    float sum = 0;
+                    int index = blockIdx.x * blockDim.x;
+                    for (int i = index; i < index + blockDim.x ; i++)
+                    {
+                        sum += temp[i];
+                    }
+                    vector_result[blockIdx.x] = sum;
+                }
+        }
+2. TensorRT基本概念
+
