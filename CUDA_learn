@@ -231,6 +231,7 @@
         5. https://zhuanlan.zhihu.com/p/362796754，CUDA 编程小练习（五），使用nvprof来测试并优化程序。
         6. https://zhuanlan.zhihu.com/p/363820880，CUDA 编程小练习（六），多线程块向量加法。
         7. https://zhuanlan.zhihu.com/p/366196428，CUDA 编程小练习（七），单block多线程向量乘法。
+        8. 
 1. 简单程序练习
     此部分代码的书写逻辑均按照：
             (1) 分配cpu内存：e.g.  (float*)malloc(sizeof(float)*vectorLength);
@@ -260,6 +261,8 @@
 参考链接：
         1. https://zhuanlan.zhihu.com/p/366196428，CUDA 编程小练习（七），向量内积。
         2. https://zhuanlan.zhihu.com/p/367833053，CUDA 编程小练习（八），矩阵乘法。
+        3. https://developer.nvidia.com/tensorrt-getting-started，TensorRT Getting Started。
+        4. https://developer.nvidia.com/blog/speeding-up-deep-learning-inference-using-tensorrt-updated/, Speeding Up Deep Learning Inference Using NVIDIA TensorRT (Updated)。
         
     1.1. （问题尚未解决）在colab继续昨天的问题分析，问题查询思路：
                         - 根据手动计算，确定运算节点的位置并输出当前节点的计算结果，以此来判断改写出错在哪里。
@@ -293,4 +296,15 @@
                 }
         }
 2. TensorRT基本概念
+    2.1.  NVIDIA TensorRT是深度学习的推理SDK（Software Development Kit，软件开发工具包）。
+            - TensorRT provides APIs and parsers to import trained models from all major deep learning frameworks.
+            - It then generates optimized runtime engines deployable in the datacenter as well as in automotive and embedded environments.
+    2.2. 介绍的例子：
+            概述：It uses a C++ example to walk you through converting a PyTorch model into an ONNX model and importing it into TensorRT, 
+                         applying optimizations, and generating a high-performance runtime engine for the datacenter environment.
+            具体任务：
+                - deploy a deep learning application onto a GPU;
+                - increasing throughput;
+                - reducing latency during inference.
+    
 
