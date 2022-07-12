@@ -339,11 +339,26 @@
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #2022.07.12
 参考链接：
-        1.
-        2. 
-        3. 
-        4. 
+        1. https://blog.csdn.net/weixin_40294176/article/details/121280157?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~default-1-121280157-blog-80188045.pc_relevant_aa&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~default-1-121280157-blog-80188045.pc_relevant_aa&utm_relevant_index=1
+             ，CUDA中Unified Memory函数cudaMallocManaged的使用。
+        2. https://zhuanlan.zhihu.com/p/367833824，CUDA 编程小练习（九），矩阵乘法。
+            https://github.com/SuperChange001/CUDA_Learning/blob/main/Solution/Exercise_09.ipynb。
+        3. https://zhuanlan.zhihu.com/p/35004208，C语言数组的多种赋值方式。
+        4. https://zhuanlan.zhihu.com/p/34587739，矩阵乘法。
         5. 
         6. 
 
-1. 
+1. 矩阵乘法
+    1.1. 方法一，每个线程计算一个向量积。
+            设有矩阵A，B，C，其中A，B为参与乘法计算的矩阵，C为结果矩阵。
+            - A的维度为[ I x J ]，B的维度为[J x K]，根据乘法原则C的维度为[I x K]。
+            - 计算过程：
+            
+    1.2. 方法二：
+    
+            
+2.  关于cudaMallocManaged()的用法查询
+
+3. C语言数组的多种赋值方式
+
+ 
