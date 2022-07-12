@@ -306,5 +306,44 @@
                 - deploy a deep learning application onto a GPU;
                 - increasing throughput;
                 - reducing latency during inference.
-    
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#2022.07.11
+参考链接：    
+        1. https://zhuanlan.zhihu.com/p/367833824，CUDA 编程小练习（九），矩阵相乘的实现。
+        2. https://blog.csdn.net/qq_42820594/article/details/82735387，C语言中，数字后面带个U，L，F的含义。
+        3. https://www.zhihu.com/question/437131193/answer/1720580312，写CUDA到底难在哪？（综述性文章，来自知乎）
+        4. http://www.mat.unimi.it/users/sansotte/cuda/CUDA_by_Example.pdf，CUDA By Example: An Introduction to General-Purpose GPU Programming。
+        5. https://www.nvidia.cn/docs/IO/51635/NVIDIA_CUDA_Programming_Guide_1.1_chs.pdf，NVIDIA CUDA 编程指南。
+        6. https://blog.csdn.net/chengde6896383/article/details/81009053，把书《CUDA By Example an Introduction to General Purpose GPU Programming》读薄。
 
+1. 解决昨天遗留问题
+    1.1. 遗留问题概述：将向量积cuda程序从手动分配内存改为全自动内存分配后出现计算结果不正确的情况。
+             问题有2，分别是：
+                    - 一是使用cudaMallocManaged()函数后没有使用cudaDeviceSynchronize()来进行同步，导致输出结果不正确。
+                    - 二是在调用核函数时<<<...>>>这部分参数填写有问题。在成功运行的程序中，此部分参数输入和之前的教程不一样，需要日后查询原因。
+             新问题：
+                    - <<<...>>>这部分参数和之前的教程不一样，需要日后查询原因。
+                    
+  2. 编写矩阵乘法cuda的kernel函数
+    2.1. 目前状况：kernel函数逻辑已确定，程序还在编写和调试（尚未测试）。
+    2.2. 明日计划：完成函数编写，并进行调试和尝试优化。
+ 
+ 3. 进一步查询教程和资料
+    3.1. 查询到新的教程：<<CUDA By Example: An Introduction to General-Purpose GPU Programming>>。
+             进度：刚开始跟着学习。
+    3.2. 阅读网上的cuda学习方法：
+             https://www.zhihu.com/question/437131193/answer/1720580312，写CUDA到底难在哪？
+             
+    3.3. 阅读《把书《CUDA By Example an Introduction to General Purpose GPU Programming》读薄》
+            https://blog.csdn.net/chengde6896383/article/details/81009053
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#2022.07.12
+参考链接：
+        1.
+        2. 
+        3. 
+        4. 
+        5. 
+        6. 
+
+1. 
