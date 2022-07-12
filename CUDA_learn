@@ -341,24 +341,205 @@
 参考链接：
         1. https://blog.csdn.net/weixin_40294176/article/details/121280157?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~default-1-121280157-blog-80188045.pc_relevant_aa&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~default-1-121280157-blog-80188045.pc_relevant_aa&utm_relevant_index=1
              ，CUDA中Unified Memory函数cudaMallocManaged的使用。
-        2. https://zhuanlan.zhihu.com/p/367833824，CUDA 编程小练习（九），矩阵乘法。
+        2. https://zhuanlan.zhihu.com/p/367833824，CUDA 编程小练习（九），矩阵乘法（一维grid）。
             https://github.com/SuperChange001/CUDA_Learning/blob/main/Solution/Exercise_09.ipynb。
         3. https://zhuanlan.zhihu.com/p/35004208，C语言数组的多种赋值方式。
-        4. https://zhuanlan.zhihu.com/p/34587739，矩阵乘法，方法二。
+        4. https://zhuanlan.zhihu.com/p/34587739，矩阵乘法，方法二（多维grid）。
         5. 
-        6. 
 
 1. 矩阵乘法
-    1.1. 方法一，每个线程计算一个向量积。
+    1.1. 方法一，每个线程计算一个向量积，使用1维grid。
             设有矩阵A，B，C，其中A，B为参与乘法计算的矩阵，C为结果矩阵。
             - A的维度为[ I x J ]，B的维度为[J x K]，根据乘法原则C的维度为[I x K]。
             - 计算过程：
+            # 一个线程算一个向量，自动分配内存
+                %%writefile Matrix_autoMalloc.cu
+                #include <stdio.h>
+
+                __global__ void matrix_mul(int *matrix_a, int *matrix_b, int *matrix_c,int matrix_a_row,int matrix_a_column,int matrix_b_column){
+                    int matrix_c_element = 0;
+                    for (int i = 0; i < matrix_a_column; i++){
+                      matrix_c_element += matrix_a[(threadIdx.x/matrix_b_column)*matrix_a_column+i] * 
+                                          matrix_b[threadIdx.x%matrix_b_column+i*matrix_b_column];
+                    }
+                    matrix_c[threadIdx.x]= matrix_c_element;
+                }
+
+                int main(int argc, char *argv[]){
+
+                    int matrix_a_row = 4; //4
+                    int matrix_a_column = 4;//4
+                    int matrix_b_row = 4;//4
+                    int matrix_b_column = 4;//4
+
+                    int *matrix_a = (int*)malloc(sizeof(int)*(matrix_a_row * matrix_a_column));
+                    int *matrix_b = (int*)malloc(sizeof(int)*(matrix_b_row * matrix_b_column));
+                    int *matrix_c = (int*)malloc(sizeof(int) * (matrix_a_row * matrix_b_column));
+
+                    int nBytes_a = sizeof(int) * (matrix_a_row * matrix_a_column);
+                    int nBytes_b = sizeof(int) * (matrix_b_row * matrix_b_column);
+                    int nBytes_c = sizeof(int) * (matrix_a_row * matrix_b_column);
+
+                    cudaMallocManaged((void**)&matrix_a, nBytes_a);
+                    cudaMallocManaged((void**)&matrix_b, nBytes_b);
+                    cudaMallocManaged((void**)&matrix_c, nBytes_c);
+
+                    // Example 1
+                    int matrix_a_ini[16] = {5,0,34,21,7,17,-12,28,8,-3,-3,-3,0,-3,5,9};
+                    int matrix_b_ini[16] = {0,16,24,-90,-23,0,11,1,3,3,0,3,66,7,8,0};
+                    memcpy(matrix_a, matrix_a_ini,sizeof(int)*16);
+                    memcpy(matrix_b, matrix_b_ini,sizeof(int)*16);
+
+
+                    // implement 100 times for getting average execution time
+                    for(int i=0; i<100;i++)
+                    {
+                       matrix_mul<<<1,matrix_a_row * matrix_b_column>>>(matrix_a, matrix_b, 
+                                        matrix_c, matrix_a_row, matrix_a_column, matrix_b_column);
+                    }
+
+                    cudaDeviceSynchronize();
+
+                    // print matrix_c to check correction
+                    for(int i = 0; i < matrix_a_row; i++){
+                        for(int j = 0; j < matrix_b_column; j++){
+                            int index = i * matrix_b_column +j;
+                            printf("%d, ",matrix_c[index]);
+                        }
+                        printf("\n");
+                    }
+
+                    cudaFree(matrix_c);
+                    cudaFree(matrix_b);
+                    cudaFree(matrix_a);
+
+                    return 0;
+                }
             
-    1.2. 方法二：
-    
+    1.2. 方法二：每个线程计算一个结果矩阵的元素，使用多维grid。
+           %%writefile Matrix_autoMalloc_2.cu
+                #include <iostream>
+
+                // 矩阵类型，行优先，M(row, col) = *(M.elements + row * M.width + col)
+                struct Matrix
+                {
+                    int width;
+                    int height;
+                    float *elements;
+                };
+
+                // 获取矩阵A的(row, col)元素
+                __device__ float getElement(Matrix *A, int row, int col)
+                {
+                        return A->elements[row * A->width + col];
+                }
+
+                // 为矩阵A的(row, col)元素赋值
+                __device__ void setElement(Matrix *A, int row, int col, float value)
+                {
+                        A->elements[row * A->width + col] = value;
+                }
+
+                // 矩阵相乘kernel，2-D，每个线程计算一个元素
+                __global__ void matMulKernel(Matrix *A, Matrix *B, Matrix *C)
+                {
+                        float Cvalue = 0.0;
+                        int row = threadIdx.y + blockIdx.y * blockDim.y;
+                        int col = threadIdx.x + blockIdx.x * blockDim.x;
+                        for (int i = 0; i < A->width; ++i)
+                        {
+                                Cvalue += getElement(A, row, i) * getElement(B, i, col);
+                        }
+                        setElement(C, row, col, Cvalue);
+                }
+
+                int main()
+                {
+                    int width = 32;//1 << 10;
+                    int height = 32;//1 << 10;
+                    Matrix *A, *B, *C;
+                    // 申请托管内存
+                    cudaMallocManaged((void**)&A, sizeof(Matrix));
+                    cudaMallocManaged((void**)&B, sizeof(Matrix));
+                    cudaMallocManaged((void**)&C, sizeof(Matrix));
+                    int nBytes = width * height * sizeof(float);
+                    cudaMallocManaged((void**)&A->elements, nBytes);
+                    cudaMallocManaged((void**)&B->elements, nBytes);
+                    cudaMallocManaged((void**)&C->elements, nBytes);
+
+                    // 初始化数据
+                    A->height = height;
+                    A->width = width;
+                    B->height = height;
+                    B->width = width;
+                    C->height = height;
+                    C->width = width;
+                    for (int i = 0; i < width * height; ++i)
+                    {
+                        A->elements[i] = 1.0;
+                        B->elements[i] = 2.0;
+                    }
+
+                    // 定义kernel的执行配置
+                    dim3 blockSize(32, 32);
+                    dim3 gridSize(1,1);/*gridSize((width + blockSize.x - 1) / blockSize.x, 
+                        (height + blockSize.y - 1) / blockSize.y);*/
+                    // 执行kernel
+                    matMulKernel << <gridSize, blockSize >> >(A, B, C);//gridSize
+
+
+                    // 同步device 保证结果能正确访问
+                    cudaDeviceSynchronize();
+                    // 检查执行结果
+                    float maxError = 0.0;
+                    for (int i = 0; i < width * height; ++i)
+                        maxError = fmax(maxError, fabs(C->elements[i] - 2 * width));
+                    std::cout << "最大误差: " << maxError << std::endl;
+
+                    // print C to check correction
+                /*    for(int i = 0; i < height; i++){
+                        for(int j = 0; j < width; j++){
+                            int index = i * width +j;
+                            printf("%f, ",C->elements[index]);
+                        }
+                        printf("\n");
+                    }*/
+                    return 0;
+                }
+        
             
 2.  关于cudaMallocManaged()的用法查询
+        - Unified Memory的使用主要就是简化代码，不需要类似于cudamalloc和cudamemcpy。
+        - cudaMallocManaged(void **devPtr, size_t size, unsigned int flags __dv(cudaMemAttachGlobal)); 一般传前两个参数即可。
+        - 传指针时先在C代码中malloc，然后cudaMallocManaged()，再赋值，否则cudaMallocManaged()会将值重置为0，结构体内指针重置为00000000。
+        - 带指针的结构体：
+                一句话总结：结构体指针先cudaMallocManaged，
+                                           结构体内指针后cudaMallocManaged，然后再给结构体内指针赋值。结构体内其他变量不受影响。
 
 3. C语言数组的多种赋值方式
+        - 首先是数组的声明，数组在声明的时候可以连续进行赋值；
+                int a[3] = {1,2,3};   //可行
+        - 但进行声明后就不可以进行多元素的赋值（不包括memcpy），只能对每个元素进行赋值；
+                int a[3];
+                a[3] = {1,2,3}; //不可行，不符合语法规范，
+                        - 这时只能进行元素的单独赋值：a[0] = 1; a[1] = 2; a[2] = 3; 
+                        - 或者使用循环进行变量赋值：int a[3];
+                                                                                     for(int i = 0; i < 3; i++)
+                                                                                        a[i] = i + 1;
+        - 在初始化赋值中，静态数组可以直接使用int a[3] = {0};进行初始化赋值，这里还有另外一种方法就是使用memset函数进行初始化操作，
+            - memset的函数原型为：void *memset(void *s, int ch, size_t n); 
+            - 将s中当前位置后面的n个字节 （typedef unsigned int size_t ）用 ch 替换并返回 s 。（注意：这里是按字节进行替换的，所以int型
+                不能设置成别的数，因为int是4个字节，而设置是一个字节）
+            - memset函数的使用如下：int a[3]; memset(a,0,sizeof(int)*3); 此种赋值方式与声明时进行赋值的不同可以体现在动态数组中，因为
+                动态数组不能在声明时进行初始化，而memset却可以对动态数组进行初始化，对动态数组的初始化如下：
+                int *a;
+                a = (int*)malloc(sizeof(int)*5);
+                memset(a,0,sizeof(int)*5);
+        - 使用memcpy函数，memcpy的函数原型为 ：void *memcpy(void *dest, const void *src, size_t n);
+
+
+
+
+
 
  
