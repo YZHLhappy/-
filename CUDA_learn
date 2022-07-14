@@ -537,8 +537,15 @@
                 memset(a,0,sizeof(int)*5);
         - 使用memcpy函数，memcpy的函数原型为 ：void *memcpy(void *dest, const void *src, size_t n);
 
-
-
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#2022.07.13
+参考链接：
+        1. https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#programming-model，cuda toolkit documentation。
+        2. chrome-extension://ikhdkkncnoglghljlkmcimlnlhkeamad/pdf-viewer/web/viewer.html?file=http%3A%2F%2Fwww.mat.unimi.it%2Fusers%2Fsansotte%2Fcuda%2FCUDA_by_Example.pdf,
+             cuda by example: an Introduction to general purpose gpu-programming。
+        3. C++ primer plus
+        4. https://blog.csdn.net/weixin_42764932/article/details/115641500，cuda编成练习
+        5. https://github.com/NVIDIA/cuda-samples，NVIDIA/cuda-samples
 
 
 
